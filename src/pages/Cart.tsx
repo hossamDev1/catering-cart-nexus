@@ -143,30 +143,35 @@ export const Cart = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <div className="mx-auto w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mb-4">
-            <ShoppingCart className="text-primary-foreground" size={24} />
+    <div className="min-h-screen bg-gradient-to-br from-background via-accent/10 to-primary/5">
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-8">
+            <div className="mx-auto w-20 h-20 bg-gradient-primary rounded-3xl flex items-center justify-center shadow-glow mb-6">
+              <ShoppingCart className="text-primary-foreground" size={32} />
+            </div>
+            <h1 className="text-4xl font-bold tracking-tight mb-2">Your Order</h1>
+            <p className="text-muted-foreground text-lg">
+              Review your items and proceed to checkout
+            </p>
           </div>
-          <h1 className="text-3xl font-bold mb-2">Your Cart</h1>
-          <p className="text-muted-foreground">
-            Review your items and proceed to checkout
-          </p>
-        </div>
 
         {cartItems.length === 0 ? (
-          <Card className="shadow-elevated bg-gradient-card">
-            <CardContent className="text-center py-12">
-              <Package size={48} className="mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-lg font-medium mb-2">Your cart is empty</h3>
-              <p className="text-muted-foreground mb-6">
-                Start shopping to add items to your cart
+          <Card className="bg-gradient-card border-0 shadow-elevated">
+            <CardContent className="text-center py-16">
+              <div className="mx-auto w-24 h-24 bg-accent/20 rounded-full flex items-center justify-center mb-6">
+                <Package size={48} className="text-muted-foreground" />
+              </div>
+              <h3 className="text-2xl font-medium mb-3">Your cart is empty</h3>
+              <p className="text-muted-foreground text-lg mb-8">
+                Start shopping to add delicious items to your cart
               </p>
               <Button 
                 onClick={() => window.location.href = '/add-to-cart'}
-                className="bg-gradient-primary hover:opacity-90"
+                variant="gradient"
+                size="lg"
               >
+                <ShoppingCart className="mr-2 h-4 w-4" />
                 Start Shopping
               </Button>
             </CardContent>
@@ -175,13 +180,16 @@ export const Cart = () => {
           <div className="grid gap-6 lg:grid-cols-3">
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-4">
-              <Card className="shadow-elevated bg-gradient-card">
+              <Card className="bg-gradient-card border-0 shadow-elevated">
                 <CardHeader>
-                  <CardTitle>Cart Items ({cartItems.length})</CardTitle>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    <Package size={20} />
+                    Cart Items ({cartItems.length})
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {cartItems.map((item) => (
-                    <div key={item.productId} className="flex items-center justify-between p-4 border rounded-md bg-background/50">
+                    <div key={item.productId} className="flex items-center justify-between p-6 border border-border/50 rounded-xl bg-background/80 shadow-soft hover:shadow-elevated transition-bounce">
                       <div className="flex-1">
                         <h3 className="font-medium">{item.productName}</h3>
                         <p className="text-sm text-muted-foreground">
@@ -242,9 +250,12 @@ export const Cart = () => {
 
             {/* Order Summary */}
             <div className="space-y-4">
-              <Card className="shadow-elevated bg-gradient-card">
+              <Card className="bg-gradient-card border-0 shadow-elevated">
                 <CardHeader>
-                  <CardTitle>Order Summary</CardTitle>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    <CreditCard size={20} />
+                    Order Summary
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {orderCalculation && (
@@ -272,7 +283,9 @@ export const Cart = () => {
                   <Button
                     onClick={handleCheckout}
                     disabled={isCheckingOut || cartItems.length === 0}
-                    className="w-full bg-gradient-primary hover:opacity-90 transition-all shadow-soft"
+                    variant="success"
+                    size="lg"
+                    className="w-full"
                   >
                     {isCheckingOut ? (
                       <>
@@ -282,7 +295,7 @@ export const Cart = () => {
                     ) : (
                       <>
                         <CreditCard size={16} className="mr-2" />
-                        Checkout
+                        Place Order
                       </>
                     )}
                   </Button>
@@ -291,6 +304,7 @@ export const Cart = () => {
             </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   );

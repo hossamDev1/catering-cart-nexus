@@ -129,25 +129,26 @@ export const AddToCart = () => {
   const selectedProduct = products.find(p => p.id === watchedProductId);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-8">
-          <div className="mx-auto w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mb-4">
-            <ShoppingCart className="text-primary-foreground" size={24} />
+    <div className="min-h-screen bg-gradient-to-br from-background via-accent/10 to-primary/5">
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-8">
+            <div className="mx-auto w-20 h-20 bg-gradient-accent rounded-3xl flex items-center justify-center shadow-glow mb-6">
+              <ShoppingCart className="text-white" size={32} />
+            </div>
+            <h1 className="text-4xl font-bold tracking-tight mb-2">Order Menu</h1>
+            <p className="text-muted-foreground text-lg">
+              Choose your delicious meal for today
+            </p>
           </div>
-          <h1 className="text-3xl font-bold mb-2">Add to Cart</h1>
-          <p className="text-muted-foreground">
-            Select a category and product to add to your cart
-          </p>
-        </div>
 
-        <Card className="shadow-elevated bg-gradient-card">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Plus size={20} />
-              Product Selection
-            </CardTitle>
-          </CardHeader>
+          <Card className="bg-gradient-card border-0 shadow-elevated">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl flex items-center justify-center gap-2">
+                <Plus size={24} />
+                Place Your Order
+              </CardTitle>
+            </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {/* Category Selection */}
@@ -262,7 +263,9 @@ export const AddToCart = () => {
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-primary hover:opacity-90 transition-all shadow-soft"
+                variant="success"
+                size="lg"
+                className="w-full"
                 disabled={isSubmitting || !watchedProductId}
               >
                 {isSubmitting ? (
@@ -272,14 +275,15 @@ export const AddToCart = () => {
                   </>
                 ) : (
                   <>
-                    <Plus size={16} className="mr-2" />
+                    <ShoppingCart size={16} className="mr-2" />
                     Add to Cart
                   </>
                 )}
               </Button>
             </form>
           </CardContent>
-        </Card>
+          </Card>
+        </div>
       </div>
     </div>
   );

@@ -71,17 +71,25 @@ export const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-accent/20 p-4">
-      <Card className="w-full max-w-md shadow-elevated bg-gradient-card">
-        <CardHeader className="space-y-1 text-center">
-          <div className="mx-auto w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mb-4">
-            <User className="text-primary-foreground" size={24} />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-accent/20 to-primary/5 p-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="mx-auto w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-glow mb-4">
+            <span className="text-2xl font-bold text-primary-foreground">CP</span>
           </div>
-          <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
-          <CardDescription>
-            Sign in to your CateringPlus account
-          </CardDescription>
-        </CardHeader>
+          <h1 className="text-3xl font-bold tracking-tight">CateringPlus</h1>
+          <p className="text-muted-foreground mt-2">Employee Food Ordering System</p>
+        </div>
+        
+        <Card className="bg-gradient-card border-0 shadow-elevated">
+          <CardHeader className="space-y-1 text-center">
+            <CardTitle className="text-xl font-semibold">
+              Sign In
+            </CardTitle>
+            <CardDescription>
+              Enter your credentials to access your account
+            </CardDescription>
+          </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
@@ -137,7 +145,9 @@ export const Login = () => {
 
             <Button
               type="submit"
-              className="w-full bg-gradient-primary hover:opacity-90 transition-all shadow-soft"
+              variant="gradient"
+              size="lg"
+              className="w-full"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -151,7 +161,8 @@ export const Login = () => {
             </Button>
           </form>
         </CardContent>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 };
