@@ -13,15 +13,15 @@ interface CartItem {
   productId: string;
   productName: string;
   quantity: number;
-  price: number;
-  total: number;
+  price?: number;
+  total?: number;
 }
 
 interface OrderCalculation {
-  subtotal: number;
-  tax: number;
-  delivery: number;
-  total: number;
+  subtotal?: number;
+  tax?: number;
+  delivery?: number;
+  total?: number;
 }
 
 export const Cart = () => {
@@ -34,16 +34,24 @@ export const Cart = () => {
   const loadCart = async () => {
     try {
       const cartResponse = await cartApi.getCart();
+      console.log('Cart response:', cartResponse.data); // Debug log
       setCartItems(cartResponse.data || []);
       
       // Calculate order totals
       if (cartResponse.data && cartResponse.data.length > 0) {
-        const calculationResponse = await cartApi.calculateOrder();
-        setOrderCalculation(calculationResponse.data);
+        try {
+          const calculationResponse = await cartApi.calculateOrder();
+          console.log('Calculation response:', calculationResponse.data); // Debug log
+          setOrderCalculation(calculationResponse.data);
+        } catch (calcError) {
+          console.error('Error calculating order:', calcError);
+          setOrderCalculation(null);
+        }
       } else {
         setOrderCalculation(null);
       }
     } catch (error) {
+      console.error('Error loading cart:', error);
       toast({
         title: "Error loading cart",
         description: "Please try again later",
@@ -177,7 +185,7 @@ export const Cart = () => {
                       <div className="flex-1">
                         <h3 className="font-medium">{item.productName}</h3>
                         <p className="text-sm text-muted-foreground">
-                          ${item.price.toFixed(2)} each
+                          ${(item.price || 0).toFixed(2)} each
                         </p>
                       </div>
                       
@@ -213,7 +221,7 @@ export const Cart = () => {
                         </div>
                         
                         <div className="text-right">
-                          <p className="font-medium">${item.total.toFixed(2)}</p>
+                          <p className="font-medium">${(item.total || 0).toFixed(2)}</p>
                         </div>
                         
                         <Button
@@ -243,20 +251,20 @@ export const Cart = () => {
                     <>
                       <div className="flex justify-between">
                         <span>Subtotal</span>
-                        <span>${orderCalculation.subtotal.toFixed(2)}</span>
+                        <span>${(orderCalculation.subtotal || 0).toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Tax</span>
-                        <span>${orderCalculation.tax.toFixed(2)}</span>
+                        <span>${(orderCalculation.tax || 0).toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Delivery</span>
-                        <span>${orderCalculation.delivery.toFixed(2)}</span>
+                        <span>${(orderCalculation.delivery || 0).toFixed(2)}</span>
                       </div>
                       <Separator />
                       <div className="flex justify-between text-lg font-bold">
                         <span>Total</span>
-                        <span>${orderCalculation.total.toFixed(2)}</span>
+                        <span>${(orderCalculation.total || 0).toFixed(2)}</span>
                       </div>
                     </>
                   )}
