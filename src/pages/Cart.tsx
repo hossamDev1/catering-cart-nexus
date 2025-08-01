@@ -1,42 +1,112 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { cartApi } from '@/lib/api';
+import { cartApi, ProductPhotosList } from '@/lib/api';
 import { useCartStore } from '@/store/cartStore';
 import { toast } from '@/hooks/use-toast';
-import { ShoppingCart, Minus, Plus, Trash2, CreditCard, Package } from 'lucide-react';
+import {
+  ShoppingCart,
+  Minus,
+  Plus,
+  Trash2,
+  CreditCard,
+  Package,
+  Clock,
+  Truck,
+  Shield,
+  DollarSign,
+} from 'lucide-react';
 
+interface CartList {
+  productId: string;
+  productCount: number;
+  products: CartItem;
+}
 interface CartItem {
   productId: string;
   productName: string;
-  quantity: number;
-  price?: number;
-  total?: number;
+  productARName: string;
+  productSpcefication: string;
+  categoryId: string;
+  categoryName: string;
+  productCode: string;
+  parentProductId: string;
+  productPrice: string;
+  stockAmount: string;
+  viewingCount: number;
+  isFavourite: boolean;
+  isCustomProduct: boolean;
+  active: boolean;
+  productPhotosList: ProductPhotosList[];
 }
 
 interface OrderCalculation {
-  subtotal?: number;
-  tax?: number;
-  delivery?: number;
-  total?: number;
+  discountAmount: number;
+  subTotalAmount: number;
+  totalAmount: number;
+  totalPaidBalance: number;
+  totalPaidCash: number;
+}
+
+interface UserAddress {
+  addressId: string;
+  detailedAddress: string;
+  mapLocation: string;
+  cityId: string;
+  countryId: string;
+  userId: string;
+  title: string;
+  area: string;
+  streetName: string;
+  buildingNumber: string;
+  floor: string;
+  apartment: string;
+  active: boolean;
 }
 
 export const Cart = () => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [orderCalculation, setOrderCalculation] = useState<OrderCalculation | null>(null);
+  const [cartItems, setCartItems] = useState<CartList[]>([]);
+  const [orderCalculation, setOrderCalculation] =
+    useState<OrderCalculation | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState<string | null>(null);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [discountCode, setDiscountCode] = useState('');
+  const [orderNotes, setOrderNotes] = useState('');
+  const [userAddresses, setUserAddresses] = useState<UserAddress[]>([]);
+  const [selectedAddress, setSelectedAddress] = useState<UserAddress | null>(
+    null
+  );
+
+  const loadUserAddresses = async () => {
+    try {
+      const response = await cartApi.getUserAddresses();
+      setUserAddresses(response.data || []);
+      console.log('User addresses:', response.data);
+      if (response.data && response.data.length > 0) {
+        setSelectedAddress(response.data[0]);
+      }
+    } catch (error) {
+      console.error('Error loading user addresses:', error);
+      toast({
+        title: 'Error loading addresses',
+        description: 'Please try again later',
+        variant: 'destructive',
+      });
+    }
+  };
 
   const loadCart = async () => {
     try {
       const cartResponse = await cartApi.getCart();
       console.log('Cart response:', cartResponse.data); // Debug log
       setCartItems(cartResponse.data || []);
-      
+
       // Calculate order totals
       if (cartResponse.data && cartResponse.data.length > 0) {
         try {
@@ -53,9 +123,9 @@ export const Cart = () => {
     } catch (error) {
       console.error('Error loading cart:', error);
       toast({
-        title: "Error loading cart",
-        description: "Please try again later",
-        variant: "destructive"
+        title: 'Error loading cart',
+        description: 'Please try again later',
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -64,6 +134,7 @@ export const Cart = () => {
 
   useEffect(() => {
     loadCart();
+    loadUserAddresses();
   }, []);
 
   const updateQuantity = async (productId: string, newQuantity: number) => {
@@ -72,27 +143,29 @@ export const Cart = () => {
       await cartApi.manageCart({
         productId,
         quantity: newQuantity,
-        extrasListIDs: []
+        extrasListIDs: [],
       });
 
       if (newQuantity === 0) {
         toast({
-          title: "Item removed",
-          description: "Product has been removed from your cart"
+          title: 'Item removed',
+          description: 'Product has been removed from your cart',
+          variant: 'success',
         });
       } else {
         toast({
-          title: "Cart updated",
-          description: "Quantity has been updated"
+          title: 'Cart updated',
+          description: 'Quantity has been updated',
+          variant: 'success',
         });
       }
 
       await loadCart(); // Reload cart to get updated data
     } catch (error) {
       toast({
-        title: "Error updating cart",
-        description: "Please try again later",
-        variant: "destructive"
+        title: 'Error updating cart',
+        description: 'Please try again later',
+        variant: 'destructive',
       });
     } finally {
       setIsUpdating(null);
@@ -107,22 +180,24 @@ export const Cart = () => {
     setIsCheckingOut(true);
     try {
       await cartApi.checkout({
-        addressId: "90287fd7-1e8f-4096-9def-29c12763357e", // Default address ID
-        orderNotes: ""
+        addressId: selectedAddress?.addressId || '', 
+        orderNotes: orderNotes,
+        discountCode: discountCode,
       });
 
       toast({
-        title: "Order placed successfully!",
-        description: "Your order has been submitted and is being processed"
+        title: 'Order placed successfully!',
+        description: 'Your order has been submitted and is being processed',
+        variant: 'success',
       });
 
       // Clear cart and reload
       await loadCart();
     } catch (error) {
       toast({
-        title: "Checkout failed",
-        description: "Please try again later",
-        variant: "destructive"
+        title: 'Checkout failed',
+        description: 'Please try again later',
+        variant: 'destructive',
       });
     } finally {
       setIsCheckingOut(false);
@@ -131,10 +206,13 @@ export const Cart = () => {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-6 py-8">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <LoadingSpinner size="lg" className="mx-auto mb-4" />
+            <LoadingSpinner
+              size="lg"
+              className="mx-auto mb-4"
+            />
             <p className="text-muted-foreground">Loading your cart...</p>
           </div>
         </div>
@@ -143,101 +221,148 @@ export const Cart = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-accent/10 to-primary/5">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-8">
-            <div className="mx-auto w-20 h-20 bg-gradient-primary rounded-3xl flex items-center justify-center shadow-glow mb-6">
-              <ShoppingCart className="text-primary-foreground" size={32} />
-            </div>
-            <h1 className="text-4xl font-bold tracking-tight mb-2">Your Order</h1>
-            <p className="text-muted-foreground text-lg">
-              Review your items and proceed to checkout
-            </p>
+    <div className="container mx-auto px-6 py-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="mx-auto w-20 h-20 bg-gradient-primary rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+            <ShoppingCart
+              className="text-primary-foreground"
+              size={32}
+            />
           </div>
+          <h1 className="text-4xl font-bold mb-3 text-foreground">Your Cart</h1>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            Review your items and proceed to checkout. Your order will be
+            delivered to your workplace.
+          </p>
+        </div>
 
         {cartItems.length === 0 ? (
-          <Card className="bg-gradient-card border-0 shadow-elevated">
+          <Card className="card-elevated">
             <CardContent className="text-center py-16">
-              <div className="mx-auto w-24 h-24 bg-accent/20 rounded-full flex items-center justify-center mb-6">
-                <Package size={48} className="text-muted-foreground" />
-              </div>
-              <h3 className="text-2xl font-medium mb-3">Your cart is empty</h3>
-              <p className="text-muted-foreground text-lg mb-8">
-                Start shopping to add delicious items to your cart
+              <Package
+                size={64}
+                className="mx-auto text-muted-foreground mb-6"
+              />
+              <h3 className="text-2xl font-semibold mb-3">
+                Your cart is empty
+              </h3>
+              <p className="text-muted-foreground mb-8 text-lg">
+                Start browsing our delicious menu to add items to your cart
               </p>
-              <Button 
-                onClick={() => window.location.href = '/add-to-cart'}
-                variant="gradient"
-                size="lg"
+              <Button
+                onClick={() => (window.location.href = '/add-to-cart')}
+                className="btn-primary px-8 py-3 text-lg"
               >
-                <ShoppingCart className="mr-2 h-4 w-4" />
-                Start Shopping
+                Start Ordering
               </Button>
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-6 lg:grid-cols-3">
+          <div className="grid gap-8 lg:grid-cols-3">
             {/* Cart Items */}
-            <div className="lg:col-span-2 space-y-4">
-              <Card className="bg-gradient-card border-0 shadow-elevated">
-                <CardHeader>
-                  <CardTitle className="text-xl flex items-center gap-2">
-                    <Package size={20} />
-                    Cart Items ({cartItems.length})
+            <div className="lg:col-span-2 space-y-6">
+              <Card className="card-elevated">
+                <CardHeader className="pb-6">
+                  <CardTitle className="flex items-center gap-3 text-xl">
+                    <ShoppingCart
+                      size={24}
+                      className="text-primary"
+                    />
+                    Order Items ({cartItems.length})
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {cartItems.map((item) => (
-                    <div key={item.productId} className="flex items-center justify-between p-6 border border-border/50 rounded-xl bg-background/80 shadow-soft hover:shadow-elevated transition-bounce">
-                      <div className="flex-1">
-                        <h3 className="font-medium">{item.productName}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          ${(item.price || 0).toFixed(2)} each
-                        </p>
+                    <div
+                      key={item.productId}
+                      className="flex items-center gap-4 p-6 border rounded-xl bg-gradient-card hover:shadow-md transition-all duration-200"
+                    >
+                      <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                        <img
+                          src={item.products.productPhotosList[0].photoURL}
+                          alt={item.products.productName}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
-                      
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-lg mb-1">
+                          {item.products.productName}
+                        </h3>
+                        <h5 className="text-muted-foreground text-sm">
+                          {item.products.categoryName}
+                        </h5>
+                        <p className="text-muted-foreground text-sm">
+                          {item.products.productSpcefication}
+                        </p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <span className="font-medium">
+                            EG {item.products.productPrice} each
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Quantity Controls */}
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3">
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => updateQuantity(item.productId, Math.max(0, item.quantity - 1))}
+                            onClick={() =>
+                              updateQuantity(
+                                item.productId,
+                                Math.max(0, item.productCount - 1)
+                              )
+                            }
                             disabled={isUpdating === item.productId}
-                            className="h-8 w-8 p-0"
+                            className="h-10 w-10 p-0 rounded-lg"
                           >
-                            <Minus size={14} />
+                            <Minus size={16} />
                           </Button>
-                          
-                          <span className="w-8 text-center font-medium">
+
+                          <div className="w-12 text-center">
                             {isUpdating === item.productId ? (
                               <LoadingSpinner size="sm" />
                             ) : (
-                              item.quantity
+                              <span className="font-semibold text-lg">
+                                {item.productCount}
+                              </span>
                             )}
-                          </span>
-                          
+                          </div>
+
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => updateQuantity(item.productId, item.quantity + 1)}
+                            onClick={() =>
+                              updateQuantity(
+                                item.productId,
+                                item.productCount + 1
+                              )
+                            }
                             disabled={isUpdating === item.productId}
-                            className="h-8 w-8 p-0"
+                            className="h-10 w-10 p-0 rounded-lg"
                           >
-                            <Plus size={14} />
+                            <Plus size={16} />
                           </Button>
                         </div>
-                        
-                        <div className="text-right">
-                          <p className="font-medium">${(item.total || 0).toFixed(2)}</p>
+
+                        <div className="text-right min-w-[80px]">
+                          <p className="font-semibold text-lg">
+                            EG{' '}
+                            {(
+                              (Number(item.products.productPrice) || 0) *
+                              item.productCount
+                            ).toFixed(2)}
+                          </p>
                         </div>
-                        
+
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => removeItem(item.productId)}
                           disabled={isUpdating === item.productId}
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10 h-10 w-10 p-0 rounded-lg"
                         >
                           <Trash2 size={16} />
                         </Button>
@@ -249,53 +374,116 @@ export const Cart = () => {
             </div>
 
             {/* Order Summary */}
-            <div className="space-y-4">
-              <Card className="bg-gradient-card border-0 shadow-elevated">
-                <CardHeader>
-                  <CardTitle className="text-xl flex items-center gap-2">
-                    <CreditCard size={20} />
+            <div className="space-y-6">
+              <Card className="card-elevated">
+                <CardHeader className="pb-6">
+                  <CardTitle className="flex items-center gap-2">
+                    <CreditCard
+                      size={20}
+                      className="text-primary"
+                    />
                     Order Summary
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {orderCalculation && (
                     <>
-                      <div className="flex justify-between">
-                        <span>Subtotal</span>
-                        <span>${(orderCalculation.subtotal || 0).toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Tax</span>
-                        <span>${(orderCalculation.tax || 0).toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Delivery</span>
-                        <span>${(orderCalculation.delivery || 0).toFixed(2)}</span>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">
+                            Subtotal
+                          </span>
+                          <span className="font-medium">
+                            EG{' '}
+                            {(orderCalculation.subTotalAmount || 0).toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Tax</span>
+                          <span className="font-medium">
+                            EG{' '}
+                            {(orderCalculation.discountAmount || 0).toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">
+                            Delivery
+                          </span>
+                          <span className="font-medium">
+                            EG{' '}
+                            {(orderCalculation.totalPaidBalance || 0).toFixed(
+                              2
+                            )}
+                          </span>
+                        </div>
                       </div>
                       <Separator />
-                      <div className="flex justify-between text-lg font-bold">
+                      <div className="flex justify-between items-center text-xl font-bold">
                         <span>Total</span>
-                        <span>${(orderCalculation.total || 0).toFixed(2)}</span>
+                        <span className="text-primary">
+                          EG {(orderCalculation.totalAmount || 0).toFixed(2)}
+                        </span>
                       </div>
                     </>
                   )}
-                  
+
+                  {/* Discount Code and Order Notes */}
+                  <div className="space-y-4 pt-4 border-t border-border/50">
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="discountCode"
+                        className="text-sm font-medium"
+                      >
+                        Discount Code
+                      </Label>
+                      <Input
+                        id="discountCode"
+                        type="text"
+                        placeholder="Enter discount code (optional)"
+                        value={discountCode}
+                        onChange={(e) => setDiscountCode(e.target.value)}
+                        className="input-focus"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="orderNotes"
+                        className="text-sm font-medium"
+                      >
+                        Order Notes
+                      </Label>
+                      <Textarea
+                        id="orderNotes"
+                        placeholder="Add special instructions for your order (optional)"
+                        value={orderNotes}
+                        onChange={(e) => setOrderNotes(e.target.value)}
+                        className="input-focus min-h-[80px] resize-none"
+                        rows={3}
+                      />
+                    </div>
+                  </div>
+
                   <Button
                     onClick={handleCheckout}
                     disabled={isCheckingOut || cartItems.length === 0}
-                    variant="success"
-                    size="lg"
-                    className="w-full"
+                    className="w-full btn-primary h-12 text-base font-medium"
                   >
                     {isCheckingOut ? (
                       <>
-                        <LoadingSpinner size="sm" className="mr-2" />
+                        <LoadingSpinner
+                          size="sm"
+                          className="mr-2"
+                        />
                         Processing...
                       </>
                     ) : (
                       <>
-                        <CreditCard size={16} className="mr-2" />
-                        Place Order
+                        <CreditCard
+                          size={18}
+                          className="mr-2"
+                        />
+                        Proceed to Checkout
                       </>
                     )}
                   </Button>
@@ -304,7 +492,6 @@ export const Cart = () => {
             </div>
           </div>
         )}
-        </div>
       </div>
     </div>
   );

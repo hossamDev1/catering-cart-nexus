@@ -44,6 +44,9 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   tokenCode: string;
+  name: string
+  userName: string
+  id:string
   // Add other fields as needed
 }
 
@@ -54,11 +57,31 @@ export interface Category {
 }
 
 export interface Product {
-  id: string;
-  name: string;
-  price: number;
-  description?: string;
-  // Add other fields as needed
+  productId: string
+  productName: string
+  productARName: string
+  productSpcefication: string
+  productARSpcefication: string;
+  categoryId: string
+  categoryName: string
+  productCode: string
+  parentProductId: string
+  productPrice: string
+  stockAmount: string
+  viewingCount: number
+  isFavourite: boolean
+  active: boolean
+  productPhotosList: ProductPhotosList[]
+  productExtrasList?: string[]
+  subProductLists?: string[]
+}
+
+export interface ProductPhotosList {
+  photoId: string
+  photoByteArray: string
+  photoURL: string
+  isMainPhoto: boolean
+  productID: string
 }
 
 export interface CartItem {
@@ -76,6 +99,7 @@ export interface ManageCartRequest {
 export interface CheckoutRequest {
   addressId: string;
   orderNotes: string;
+  discountCode?: string;
 }
 
 // API Functions
@@ -93,6 +117,8 @@ export const categoriesApi = {
 };
 
 export const cartApi = {
+  getUserAddresses: () => 
+    api.get('/Addresses/GetAddressListByUserId'),
   manageCart: (data: ManageCartRequest) => 
     api.post('/Cart/ManageCart', data),
   
@@ -100,7 +126,7 @@ export const cartApi = {
     api.get('/Cart/GetUserCartList'),
   
   calculateOrder: () => 
-    api.post('/Order/OrderCalculation'),
+    api.get('/Order/OrderCalculation'),
   
   checkout: (data: CheckoutRequest) => 
     api.post('/Order/CheckOut', data)

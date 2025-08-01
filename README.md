@@ -1,73 +1,95 @@
-# Welcome to your Lovable project
+# CateringPlus - Workplace Food Ordering Platform
 
-## Project info
+A modern, professional food ordering platform designed specifically for workplace environments. Built with React, TypeScript, and Tailwind CSS.
 
-**URL**: https://lovable.dev/projects/503086f0-a1d9-40b3-99b1-7b7048153b96
+## 🎨 Modern Professional Design
 
-## How can I edit this code?
+### Key Design Features
+- **Corporate-Friendly Color Scheme**: Professional blue tones with clean white backgrounds
+- **Enhanced Typography**: Improved font weights and spacing for better readability
+- **Modern Card Design**: Elevated cards with subtle shadows and gradients
+- **Responsive Layout**: Optimized for desktop and mobile workplace use
+- **Professional Navigation**: Clean header with employee portal branding
+- **Improved Visual Hierarchy**: Better spacing and component organization
 
-There are several ways of editing your application.
+### UI Components Enhanced
+- **Login Page**: Professional authentication interface with workplace branding
+- **Order Menu**: Modern product selection with enhanced product cards
+- **Shopping Cart**: Improved cart interface with better product visualization
+- **Navigation**: Clean, professional header with employee portal indicators
+- **404 Page**: Professional error page with helpful navigation options
 
-**Use Lovable**
+## 🚀 Features
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/503086f0-a1d9-40b3-99b1-7b7048153b96) and start prompting.
+- **Secure Authentication**: Employee login system
+- **Product Catalog**: Browse food categories and items
+- **Shopping Cart**: Add, remove, and manage order items
+- **Order Management**: Complete checkout process
+- **Responsive Design**: Works on all devices
+- **Professional UI**: Workplace-appropriate design
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🛠️ Tech Stack
 
-**Use your preferred IDE**
+- **Frontend**: React 18, TypeScript
+- **Styling**: Tailwind CSS with custom design system
+- **UI Components**: Radix UI + shadcn/ui
+- **State Management**: Zustand
+- **Form Handling**: React Hook Form + Zod validation
+- **HTTP Client**: Axios
+- **Routing**: React Router DOM
+- **Build Tool**: Vite
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🎯 Design System
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Colors
+- **Primary**: Professional blue (#3B82F6)
+- **Background**: Clean white (#FFFFFF)
+- **Text**: Dark gray (#1F2937)
+- **Accent**: Light blue (#EFF6FF)
 
-Follow these steps:
+### Typography
+- **Headings**: Semibold with tight tracking
+- **Body**: Regular weight with improved line height
+- **Professional**: Clean, readable fonts
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Components
+- **Cards**: Elevated with subtle shadows
+- **Buttons**: Gradient primary buttons with hover effects
+- **Inputs**: Focus states with ring indicators
+- **Navigation**: Clean, professional styling
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 📱 Responsive Design
 
-# Step 3: Install the necessary dependencies.
-npm i
+- **Desktop**: Optimized for workplace desktop use
+- **Tablet**: Responsive grid layouts
+- **Mobile**: Touch-friendly interface elements
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+## 🔧 Getting Started
 
-**Edit a file directly in GitHub**
+1. **Install Dependencies**
+   ```bash
+   npm install
+   ```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+2. **Start Development Server**
+   ```bash
+   npm run dev
+   ```
 
-**Use GitHub Codespaces**
+3. **Build for Production**
+   ```bash
+   npm run build
+   ```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🎨 Design Philosophy
 
-## What technologies are used for this project?
+This application is designed with workplace environments in mind:
+- **Professional Appearance**: Suitable for corporate settings
+- **Efficient Workflow**: Streamlined ordering process
+- **Clear Information**: Easy-to-read product details and pricing
+- **Trust Indicators**: Security and delivery information prominently displayed
+- **Accessibility**: High contrast and readable typography
 
-This project is built with:
+## 📄 License
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/503086f0-a1d9-40b3-99b1-7b7048153b96) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+This project is licensed under the MIT License.
