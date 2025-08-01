@@ -177,10 +177,19 @@ export const Cart = () => {
   };
 
   const handleCheckout = async () => {
+    if (orderNotes.trim() === '') {
+      toast({
+        title: 'Order notes required',
+        description: 'Please add order notes before proceeding with checkout',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsCheckingOut(true);
     try {
       await cartApi.checkout({
-        addressId: selectedAddress?.addressId || '', 
+        addressId: selectedAddress?.addressId || '',
         orderNotes: orderNotes,
         discountCode: discountCode,
       });
@@ -451,22 +460,31 @@ export const Cart = () => {
                         htmlFor="orderNotes"
                         className="text-sm font-medium"
                       >
-                        Order Notes
+                        Order Notes <span className="text-destructive">*</span>
                       </Label>
                       <Textarea
                         id="orderNotes"
-                        placeholder="Add special instructions for your order (optional)"
+                        placeholder="Please add Location Details (Address, Floor, Apartment, etc.)"
                         value={orderNotes}
                         onChange={(e) => setOrderNotes(e.target.value)}
-                        className="input-focus min-h-[80px] resize-none"
+                        className={`input-focus min-h-[80px] resize-none ${
+                          orderNotes.trim() === ''
+                            ? 'border-destructive focus:border-destructive'
+                            : ''
+                        }`}
                         rows={3}
+                        required
                       />
                     </div>
                   </div>
 
                   <Button
                     onClick={handleCheckout}
-                    disabled={isCheckingOut || cartItems.length === 0}
+                    disabled={
+                      isCheckingOut ||
+                      cartItems.length === 0 ||
+                      orderNotes.trim() === ''
+                    }
                     className="w-full btn-primary h-12 text-base font-medium"
                   >
                     {isCheckingOut ? (
