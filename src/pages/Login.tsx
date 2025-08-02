@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,6 +17,7 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { authApi } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
 import { toast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { Eye, EyeOff, User, Building2, Lock } from 'lucide-react';
 
 const loginSchema = z.object({
@@ -31,7 +32,13 @@ export const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const { setUser } = useAuthStore();
+  const { setUser, isAuthenticated } = useAuthStore();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/add-to-cart');
+    }
+  }, [isAuthenticated, navigate]);
 
   const {
     register,
@@ -39,7 +46,6 @@ export const Login = () => {
     formState: { errors },
   } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
-
   });
 
   const onSubmit = async (data: LoginForm) => {
@@ -74,37 +80,29 @@ export const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary/20 to-muted/30 p-4">
-      <div className="w-full max-w-md">
-        {/* Header */}
-        {/* <div className="text-center mb-8">
-          <div className="mx-auto w-20 h-20 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-            <img src="/Catering-plus.png" alt="CateringPlus Logo" className="w-16 h-16 object-contain" />
-          </div>
-
-        </div> */}
-
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary/20 to-muted/30 p-4 sm:p-6">
+      <div className="w-full max-w-sm sm:max-w-md">
         {/* Login Card */}
         <Card className="card-elevated">
-          <CardHeader className="space-y-1 text-center pb-6">
-            <div className="mx-auto w-20 h-20 bg-gradient-to-br from-primary/10 to-secondary/30 rounded-2xl flex items-center justify-center mb-6 shadow-lg border border-primary/20">
+          <CardHeader className="space-y-1 text-center pb-4 sm:pb-6">
+            <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-primary/10 to-secondary/30 rounded-2xl flex items-center justify-center mb-4 sm:mb-6 shadow-lg border border-primary/20">
               <img
                 src="/Catering-plus.png"
                 alt="CateringPlus Logo"
-                className="w-16 h-16 object-contain"
+                className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
               />
             </div>
-            <CardTitle className="text-2xl font-semibold">
+            <CardTitle className="text-xl sm:text-2xl font-semibold">
               Welcome Back
             </CardTitle>
-            <CardDescription className="text-base">
+            <CardDescription className="text-sm sm:text-base">
               Sign in to access your workplace food ordering account.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-4 sm:space-y-6">
             <form
               onSubmit={handleSubmit(onSubmit)}
-              className="space-y-5"
+              className="space-y-4 sm:space-y-5"
             >
               <div className="space-y-2">
                 <Label
@@ -119,7 +117,7 @@ export const Login = () => {
                     type="email"
                     placeholder="Enter your work email"
                     {...register('email')}
-                    className="input-focus pl-10 h-11"
+                    className="input-focus pl-10 h-10 sm:h-11"
                   />
                   <User
                     className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
@@ -146,7 +144,7 @@ export const Login = () => {
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Enter your password"
                     {...register('password')}
-                    className="input-focus pl-10 pr-10 h-11"
+                    className="input-focus pl-10 pr-10 h-10 sm:h-11"
                   />
                   <Lock
                     className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
@@ -188,7 +186,7 @@ export const Login = () => {
 
               <Button
                 type="submit"
-                className="w-full btn-primary h-11 text-base font-medium"
+                className="w-full btn-primary h-10 sm:h-11 text-base font-medium"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -206,7 +204,7 @@ export const Login = () => {
             </form>
 
             {/* Footer */}
-            <div className="pt-4 border-t border-border/50">
+            <div className="pt-3 sm:pt-4 border-t border-border/50">
               <p className="text-xs text-center text-muted-foreground">
                 Secure access to your workplace food ordering system
               </p>

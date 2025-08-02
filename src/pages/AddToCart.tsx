@@ -17,7 +17,8 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { categoriesApi, cartApi, Category, Product } from '@/lib/api';
 import { useCartStore } from '@/store/cartStore';
 import { toast } from '@/hooks/use-toast';
-import { ShoppingCart, Plus, Utensils, Clock, DollarSign } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { ShoppingCart, Plus, Utensils, Clock } from 'lucide-react';
 
 const addToCartSchema = z.object({
   categoryId: z.string().min(1, 'Please select a category'),
@@ -34,6 +35,7 @@ export const AddToCart = () => {
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const isMobile = useIsMobile();
 
   const {
     register,
@@ -140,39 +142,55 @@ export const AddToCart = () => {
   );
 
   return (
-    <div className="container mx-auto px-6 py-8">
+    <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="mx-auto w-20 h-20 bg-gradient-primary rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-            <Utensils className="text-primary-foreground" size={32} />
+        <div className="text-center mb-8 sm:mb-12">
+          <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 bg-gradient-primary rounded-2xl flex items-center justify-center mb-4 sm:mb-6 shadow-lg">
+            <Utensils
+              className="text-primary-foreground"
+              size={isMobile ? 24 : 32}
+            />
           </div>
-          <h1 className="text-4xl font-bold mb-3 text-foreground">Order Food</h1>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Browse our selection of fresh, delicious meals perfect for your workplace. 
-            Quick ordering, fast delivery, and great taste guaranteed.
+          <h1 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-3 text-foreground">
+            Order
+          </h1>
+          <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto px-4">
+            Browse our selection of fresh, delicious drinks perfect for your
+            workplace. Quick ordering, fast delivery, and great taste guaranteed
           </p>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-3">
+        <div className="grid gap-6 sm:gap-8 lg:grid-cols-1">
           {/* Order Form */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-1">
             <Card className="card-elevated">
-              <CardHeader className="pb-6">
-                <CardTitle className="flex items-center gap-3 text-xl">
-                  <Plus size={24} className="text-primary" />
+              <CardHeader className="pb-4 sm:pb-6">
+                <CardTitle className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl">
+                  <Plus
+                    size={isMobile ? 20 : 24}
+                    className="text-primary"
+                  />
                   Place Your Order
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <form
+                  onSubmit={handleSubmit(onSubmit)}
+                  className="space-y-4 sm:space-y-6"
+                >
                   {/* Category Selection */}
-                  <div className="space-y-3">
-                    <Label htmlFor="category" className="text-sm font-medium">Food Category</Label>
+                  <div className="space-y-2 sm:space-y-3">
+                    <Label
+                      htmlFor="category"
+                      className="text-sm font-medium"
+                    >
+                      Select Category
+                    </Label>
                     {isLoadingCategories ? (
-                      <div className="flex items-center gap-3 p-4 border rounded-lg bg-muted/50">
+                      <div className="flex items-center gap-3 p-3 sm:p-4 border rounded-lg bg-muted/50">
                         <LoadingSpinner size="sm" />
-                        <span className="text-muted-foreground">
+                        <span className="text-muted-foreground text-sm sm:text-base">
                           Loading categories...
                         </span>
                       </div>
@@ -181,8 +199,8 @@ export const AddToCart = () => {
                         value={watchedCategoryId || ''}
                         onValueChange={(value) => setValue('categoryId', value)}
                       >
-                        <SelectTrigger className="input-focus h-12">
-                          <SelectValue placeholder="Select a food category" />
+                        <SelectTrigger className="input-focus h-10 sm:h-12">
+                          <SelectValue placeholder="Choose a category" />
                         </SelectTrigger>
                         <SelectContent className="bg-popover border-border">
                           {categories.map((category) => (
@@ -204,12 +222,17 @@ export const AddToCart = () => {
                   </div>
 
                   {/* Product Selection */}
-                  <div className="space-y-3">
-                    <Label htmlFor="product" className="text-sm font-medium">Select Item</Label>
+                  <div className="space-y-2 sm:space-y-3">
+                    <Label
+                      htmlFor="product"
+                      className="text-sm font-medium"
+                    >
+                      Select Item
+                    </Label>
                     {isLoadingProducts ? (
-                      <div className="flex items-center gap-3 p-4 border rounded-lg bg-muted/50">
+                      <div className="flex items-center gap-3 p-3 sm:p-4 border rounded-lg bg-muted/50">
                         <LoadingSpinner size="sm" />
-                        <span className="text-muted-foreground">
+                        <span className="text-muted-foreground text-sm sm:text-base">
                           Loading products...
                         </span>
                       </div>
@@ -219,14 +242,14 @@ export const AddToCart = () => {
                         onValueChange={(value) => setValue('productId', value)}
                         disabled={!watchedCategoryId || products.length === 0}
                       >
-                        <SelectTrigger className="input-focus h-12">
+                        <SelectTrigger className="input-focus h-10 sm:h-12">
                           <SelectValue
                             placeholder={
                               !watchedCategoryId
                                 ? 'Select a category first'
                                 : products.length === 0
                                 ? 'No items available'
-                                : 'Choose your meal'
+                                : 'Choose your item'
                             }
                           />
                         </SelectTrigger>
@@ -236,8 +259,8 @@ export const AddToCart = () => {
                               key={product.productId}
                               value={product.productId}
                             >
-                              <div className="flex items-center gap-3 w-full py-1">
-                                <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
+                              <div className="flex items-center gap-2 sm:gap-3 w-full py-1">
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg overflow-hidden flex-shrink-0">
                                   <img
                                     src={product.productPhotosList[0].photoURL}
                                     alt={product.productName}
@@ -245,10 +268,14 @@ export const AddToCart = () => {
                                   />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <div className="font-medium truncate">{product.productName}</div>
+                                  <div className="font-medium truncate text-sm sm:text-base">
+                                    {product.productName}
+                                  </div>
                                   {product.productPrice && (
-                                    <div className="text-sm text-muted-foreground flex items-center gap-1">
-                                      <DollarSign size={12} />
+                                    <div className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1">
+                                      <span className="text-muted-foreground text-xs sm:text-sm">
+                                        LE
+                                      </span>{' '}
                                       {product.productPrice}
                                     </div>
                                   )}
@@ -268,9 +295,19 @@ export const AddToCart = () => {
 
                   {/* Product Details */}
                   {selectedProduct && (
-                    <div className="p-6 bg-gradient-card rounded-xl border border-border/50">
-                      <div className="flex items-start gap-4">
-                        <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="p-4 sm:p-6 bg-gradient-card rounded-xl border border-border/50">
+                      <div
+                        className={`${
+                          isMobile
+                            ? 'flex flex-col gap-3'
+                            : 'flex items-start gap-4'
+                        }`}
+                      >
+                        <div
+                          className={`${
+                            isMobile ? 'w-full h-48 sm:h-40' : 'w-20 h-20'
+                          } rounded-lg overflow-hidden flex-shrink-0`}
+                        >
                           <img
                             src={selectedProduct.productPhotosList[0].photoURL}
                             alt={selectedProduct.productName}
@@ -278,11 +315,17 @@ export const AddToCart = () => {
                           />
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-semibold text-lg mb-2">{selectedProduct.productName}</h3>
+                          <h3 className="font-semibold text-base sm:text-lg mb-2">
+                            {selectedProduct.productName}
+                          </h3>
                           {selectedProduct.productPrice && (
                             <div className="flex items-center gap-2 mb-2">
-                              <DollarSign size={16} className="text-primary" />
-                              <span className="font-semibold text-lg">${selectedProduct.productPrice}</span>
+                              <span className="font-semibold text-base sm:text-lg">
+                                <span className="text-muted-foreground text-sm">
+                                  LE
+                                </span>{' '}
+                                {selectedProduct.productPrice}
+                              </span>
                             </div>
                           )}
                           {selectedProduct.productSpcefication && (
@@ -296,15 +339,20 @@ export const AddToCart = () => {
                   )}
 
                   {/* Quantity */}
-                  <div className="space-y-3">
-                    <Label htmlFor="quantity" className="text-sm font-medium">Quantity</Label>
+                  <div className="space-y-2 sm:space-y-3">
+                    <Label
+                      htmlFor="quantity"
+                      className="text-sm font-medium"
+                    >
+                      Quantity
+                    </Label>
                     <Input
                       id="quantity"
                       type="number"
                       min="1"
                       max="100"
                       {...register('quantity', { valueAsNumber: true })}
-                      className="input-focus h-12"
+                      className="input-focus h-10 sm:h-12"
                     />
                     {errors.quantity && (
                       <p className="text-destructive text-sm">
@@ -315,17 +363,23 @@ export const AddToCart = () => {
 
                   <Button
                     type="submit"
-                    className="w-full btn-primary h-12 text-base font-medium"
+                    className="w-full btn-primary h-10 sm:h-12 text-base font-medium"
                     disabled={isSubmitting || !watchedProductId}
                   >
                     {isSubmitting ? (
                       <>
-                        <LoadingSpinner size="sm" className="mr-2" />
+                        <LoadingSpinner
+                          size="sm"
+                          className="mr-2"
+                        />
                         Adding to cart...
                       </>
                     ) : (
                       <>
-                        <Plus size={18} className="mr-2" />
+                        <Plus
+                          size={18}
+                          className="mr-2"
+                        />
                         Add to Cart
                       </>
                     )}
@@ -333,37 +387,6 @@ export const AddToCart = () => {
                 </form>
               </CardContent>
             </Card>
-          </div>
-
-          {/* Info Panel */}
-          <div className="space-y-6">
-            <Card className="card-elevated">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Clock size={20} className="text-primary" />
-                  Order Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg">
-                    <Clock size={16} className="text-primary" />
-                    <div>
-                      <p className="font-medium text-sm">Delivery Time</p>
-                      <p className="text-muted-foreground text-sm">30-45 minutes</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-lg">
-                    <Utensils size={16} className="text-primary" />
-                    <div>
-                      <p className="font-medium text-sm">Fresh & Healthy</p>
-                      <p className="text-muted-foreground text-sm">Quality ingredients</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
           </div>
         </div>
       </div>

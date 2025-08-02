@@ -118,6 +118,8 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    /* Prevent horizontal scroll on mobile */
+    overflow-x: hidden;
   }
 
   /* Professional typography */
@@ -145,6 +147,25 @@ All colors MUST be HSL.
 
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-muted-foreground/50;
+  }
+
+  /* Mobile-specific improvements */
+  @media (max-width: 768px) {
+    /* Improve touch targets */
+    button, a, input, select, textarea {
+      /* min-height: 44px;
+      min-width: 44px; */
+    }
+
+    /* Better text readability on mobile */
+    body {
+      font-size: 16px; /* Prevents zoom on iOS */
+    }
+
+    /* Improve form elements on mobile */
+    input, select, textarea {
+      font-size: 16px; /* Prevents zoom on iOS */
+    }
   }
 }
 
@@ -181,5 +202,78 @@ All colors MUST be HSL.
 
   .accent-red {
     @apply bg-primary text-primary-foreground;
+  }
+
+  /* Mobile-specific utilities */
+  .mobile-container {
+    @apply px-4 sm:px-6;
+  }
+
+  .mobile-padding {
+    @apply py-4 sm:py-8;
+  }
+
+  .mobile-text {
+    @apply text-sm sm:text-base;
+  }
+
+  .mobile-heading {
+    @apply text-xl sm:text-2xl md:text-3xl lg:text-4xl;
+  }
+
+  .mobile-card {
+    @apply p-4 sm:p-6;
+  }
+
+  .mobile-button {
+    @apply h-10 sm:h-11 px-4 sm:px-6;
+  }
+
+  .mobile-input {
+    @apply h-10 sm:h-11 text-sm sm:text-base;
+  }
+
+  /* Touch-friendly interactions */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  /* Mobile navigation improvements */
+  .mobile-nav-item {
+    @apply block w-full px-4 py-3 text-left transition-all duration-200;
+  }
+
+  .mobile-nav-item:hover {
+    @apply bg-white/10;
+  }
+
+  .mobile-nav-item.active {
+    @apply bg-white/20;
+  }
+
+  /* Responsive grid utilities */
+  .responsive-grid {
+    @apply grid gap-4 sm:gap-6 lg:gap-8;
+  }
+
+  .responsive-flex {
+    @apply flex flex-col sm:flex-row;
+  }
+
+  .responsive-text {
+    @apply text-sm sm:text-base lg:text-lg;
+  }
+
+  .responsive-spacing {
+    @apply space-y-4 sm:space-y-6 lg:space-y-8;
+  }
+
+  /* Mobile-first responsive containers */
+  .container-responsive {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .max-width-responsive {
+    @apply max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-xl;
   }
 }

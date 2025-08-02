@@ -9,6 +9,7 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { cartApi, ProductPhotosList } from '@/lib/api';
 import { useCartStore } from '@/store/cartStore';
 import { toast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 import {
   ShoppingCart,
   Minus,
@@ -20,6 +21,7 @@ import {
   Truck,
   Shield,
   DollarSign,
+  Info,
 } from 'lucide-react';
 
 interface CartList {
@@ -82,6 +84,7 @@ export const Cart = () => {
   const [selectedAddress, setSelectedAddress] = useState<UserAddress | null>(
     null
   );
+  const isMobile = useIsMobile();
 
   const loadUserAddresses = async () => {
     try {
@@ -215,8 +218,8 @@ export const Cart = () => {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-6 py-8">
-        <div className="flex items-center justify-center min-h-[400px]">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
+        <div className="flex items-center justify-center min-h-[300px] sm:min-h-[400px]">
           <div className="text-center">
             <LoadingSpinner
               size="lg"
@@ -230,18 +233,20 @@ export const Cart = () => {
   }
 
   return (
-    <div className="container mx-auto px-6 py-8">
+    <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="mx-auto w-20 h-20 bg-gradient-primary rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+        <div className="text-center mb-8 sm:mb-12">
+          <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 bg-gradient-primary rounded-2xl flex items-center justify-center mb-4 sm:mb-6 shadow-lg">
             <ShoppingCart
               className="text-primary-foreground"
-              size={32}
+              size={isMobile ? 24 : 32}
             />
           </div>
-          <h1 className="text-4xl font-bold mb-3 text-foreground">Your Cart</h1>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <h1 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-3 text-foreground">
+            Your Cart
+          </h1>
+          <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto px-4">
             Review your items and proceed to checkout. Your order will be
             delivered to your workplace.
           </p>
@@ -249,54 +254,63 @@ export const Cart = () => {
 
         {cartItems.length === 0 ? (
           <Card className="card-elevated">
-            <CardContent className="text-center py-16">
+            <CardContent className="text-center py-12 sm:py-16">
               <Package
-                size={64}
-                className="mx-auto text-muted-foreground mb-6"
+                size={isMobile ? 48 : 64}
+                className="mx-auto text-muted-foreground mb-4 sm:mb-6"
               />
-              <h3 className="text-2xl font-semibold mb-3">
+              <h3 className="text-xl sm:text-2xl font-semibold mb-2 sm:mb-3">
                 Your cart is empty
               </h3>
-              <p className="text-muted-foreground mb-8 text-lg">
+              <p className="text-muted-foreground mb-6 sm:mb-8 text-base sm:text-lg px-4">
                 Start browsing our delicious menu to add items to your cart
               </p>
               <Button
                 onClick={() => (window.location.href = '/add-to-cart')}
-                className="btn-primary px-8 py-3 text-lg"
+                className="btn-primary px-6 sm:px-8 py-2 sm:py-3 text-base sm:text-lg"
               >
                 Start Ordering
               </Button>
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-8 lg:grid-cols-3">
+          <div className="grid gap-6 sm:gap-8 lg:grid-cols-3">
             {/* Cart Items */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-2 space-y-4 sm:space-y-6">
               <Card className="card-elevated">
-                <CardHeader className="pb-6">
-                  <CardTitle className="flex items-center gap-3 text-xl">
+                <CardHeader className="pb-4 sm:pb-6">
+                  <CardTitle className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl">
                     <ShoppingCart
-                      size={24}
+                      size={isMobile ? 20 : 24}
                       className="text-primary"
                     />
                     Order Items ({cartItems.length})
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-3 sm:space-y-4">
                   {cartItems.map((item) => (
                     <div
                       key={item.productId}
-                      className="flex items-center gap-4 p-6 border rounded-xl bg-gradient-card hover:shadow-md transition-all duration-200"
+                      className={`${
+                        isMobile
+                          ? 'flex items-start gap-3 p-4'
+                          : 'flex items-center gap-4 p-6'
+                      } border rounded-xl bg-gradient-card hover:shadow-md transition-all duration-200`}
                     >
-                      <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                      {/* Product Image */}
+                      <div
+                        className={`w-16 h-16 rounded-lg overflow-hidden flex-shrink-0`}
+                      >
                         <img
                           src={item.products.productPhotosList[0].photoURL}
                           alt={item.products.productName}
                           className="w-full h-full object-cover"
                         />
                       </div>
+
+                      {/* Product Info */}
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-lg mb-1">
+                        <h3 className="font-semibold text-base sm:text-lg mb-1">
                           {item.products.productName}
                         </h3>
                         <h5 className="text-muted-foreground text-sm">
@@ -306,15 +320,19 @@ export const Cart = () => {
                           {item.products.productSpcefication}
                         </p>
                         <div className="flex items-center gap-2 mt-2">
-                          <span className="font-medium">
-                            EG {item.products.productPrice} each
+                          <span className="font-medium text-sm sm:text-base">
+                            <span className="text-muted-foreground text-sm">
+                              LE
+                            </span>{' '}
+                            {item.products.productPrice}
                           </span>
                         </div>
                       </div>
 
-                      {/* Quantity Controls */}
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-3">
+                      {/* Actions - Right Side */}
+                      <div className="flex flex-col items-end gap-2 sm:gap-3">
+                        {/* Quantity Controls and Remove Button */}
+                        <div className="flex items-center gap-2">
                           <Button
                             variant="outline"
                             size="sm"
@@ -325,16 +343,16 @@ export const Cart = () => {
                               )
                             }
                             disabled={isUpdating === item.productId}
-                            className="h-10 w-10 p-0 rounded-lg"
+                            className="h-8 w-8 p-0 rounded-lg"
                           >
-                            <Minus size={16} />
+                            <Minus size={14} />
                           </Button>
 
-                          <div className="w-12 text-center">
+                          <div className="w-8 text-center">
                             {isUpdating === item.productId ? (
                               <LoadingSpinner size="sm" />
                             ) : (
-                              <span className="font-semibold text-lg">
+                              <span className="font-semibold text-sm">
                                 {item.productCount}
                               </span>
                             )}
@@ -350,31 +368,33 @@ export const Cart = () => {
                               )
                             }
                             disabled={isUpdating === item.productId}
-                            className="h-10 w-10 p-0 rounded-lg"
+                            className="h-8 w-8 p-0 rounded-lg"
                           >
-                            <Plus size={16} />
+                            <Plus size={14} />
                           </Button>
                         </div>
 
-                        <div className="text-right min-w-[80px]">
-                          <p className="font-semibold text-lg">
-                            EG{' '}
+                        {/* Price */}
+                        <div className="text-right mt-1 w-full flex items-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeItem(item.productId)}
+                            disabled={isUpdating === item.productId}
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 p-0 rounded-lg"
+                          >
+                            <Trash2 size={14} />
+                          </Button>
+                          <p className="font-semibold text-base sm:text-lg">
+                            <span className="text-muted-foreground text-sm">
+                              LE
+                            </span>{' '}
                             {(
                               (Number(item.products.productPrice) || 0) *
                               item.productCount
                             ).toFixed(2)}
                           </p>
                         </div>
-
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeItem(item.productId)}
-                          disabled={isUpdating === item.productId}
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10 h-10 w-10 p-0 rounded-lg"
-                        >
-                          <Trash2 size={16} />
-                        </Button>
                       </div>
                     </div>
                   ))}
@@ -383,12 +403,12 @@ export const Cart = () => {
             </div>
 
             {/* Order Summary */}
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <Card className="card-elevated">
-                <CardHeader className="pb-6">
+                <CardHeader className="pb-4 sm:pb-6">
                   <CardTitle className="flex items-center gap-2">
                     <CreditCard
-                      size={20}
+                      size={isMobile ? 18 : 20}
                       className="text-primary"
                     />
                     Order Summary
@@ -399,38 +419,41 @@ export const Cart = () => {
                     <>
                       <div className="space-y-3">
                         <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">
+                          <span className="text-muted-foreground text-sm sm:text-base">
                             Subtotal
                           </span>
-                          <span className="font-medium">
-                            EG{' '}
+                          <span className="font-medium text-sm sm:text-base">
+                            LE{' '}
                             {(orderCalculation.subTotalAmount || 0).toFixed(2)}
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Tax</span>
-                          <span className="font-medium">
-                            EG{' '}
-                            {(orderCalculation.discountAmount || 0).toFixed(2)}
+                          <span className="text-muted-foreground text-sm sm:text-base">
+                            Balance Amount
                           </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">
-                            Delivery
-                          </span>
-                          <span className="font-medium">
-                            EG{' '}
+                          <span className="font-medium text-sm sm:text-base">
+                            LE{' '}
                             {(orderCalculation.totalPaidBalance || 0).toFixed(
                               2
                             )}
                           </span>
                         </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground text-sm sm:text-base">
+                            {' '}
+                            Cash Amount
+                          </span>
+                          <span className="font-medium text-sm sm:text-base">
+                            LE{' '}
+                            {(orderCalculation.totalPaidCash || 0).toFixed(2)}
+                          </span>
+                        </div>
                       </div>
                       <Separator />
-                      <div className="flex justify-between items-center text-xl font-bold">
+                      <div className="flex justify-between items-center text-lg sm:text-xl font-bold">
                         <span>Total</span>
                         <span className="text-primary">
-                          EG {(orderCalculation.totalAmount || 0).toFixed(2)}
+                          LE {(orderCalculation.totalAmount || 0).toFixed(2)}
                         </span>
                       </div>
                     </>
@@ -440,23 +463,6 @@ export const Cart = () => {
                   <div className="space-y-4 pt-4 border-t border-border/50">
                     <div className="space-y-2">
                       <Label
-                        htmlFor="discountCode"
-                        className="text-sm font-medium"
-                      >
-                        Discount Code
-                      </Label>
-                      <Input
-                        id="discountCode"
-                        type="text"
-                        placeholder="Enter discount code (optional)"
-                        value={discountCode}
-                        onChange={(e) => setDiscountCode(e.target.value)}
-                        className="input-focus"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label
                         htmlFor="orderNotes"
                         className="text-sm font-medium"
                       >
@@ -464,7 +470,7 @@ export const Cart = () => {
                       </Label>
                       <Textarea
                         id="orderNotes"
-                        placeholder="Please add Location Details (Address, Floor, Apartment, etc.)"
+                        placeholder="Please add Location Details (Floor, Office, etc.)"
                         value={orderNotes}
                         onChange={(e) => setOrderNotes(e.target.value)}
                         className={`input-focus min-h-[80px] resize-none ${
@@ -475,6 +481,13 @@ export const Cart = () => {
                         rows={3}
                         required
                       />
+                      <p className="text-muted-foreground text-xs flex items-center gap-1">
+                        <Info
+                          size={14}
+                          className="inline-block mr-1"
+                        />{' '}
+                        Minimum 3 characters
+                      </p>
                     </div>
                   </div>
 
@@ -483,7 +496,7 @@ export const Cart = () => {
                     disabled={
                       isCheckingOut ||
                       cartItems.length === 0 ||
-                      orderNotes.trim() === ''
+                      orderNotes.trim().length < 3
                     }
                     className="w-full btn-primary h-12 text-base font-medium"
                   >
